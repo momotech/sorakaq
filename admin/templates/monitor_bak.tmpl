@@ -1,0 +1,185 @@
+{{template "header.tmpl"}}
+    {{template "nav.tmpl"}}
+
+    <div class="container-fluid">
+      <div class="row">
+        {{template "left.tmpl"}}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h2 class="sub-header">{{ .title }}</h2>
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div class="row">
+              <div class="col-md-2"></div>
+              <div class="col-md-8"  id="main" style="width: 900px;height:400px;" ></div>
+              <div class="col-md-2"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8" id="message" style="width: 900px;height:400px;"></div>
+                <div class="col-md-2"></div>
+              </div>
+
+            <script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('main'));
+                // 统计消息个数
+                var r = new Date().getTime() + Math.random() + Math.random();
+                $.get('/sorakaq/monitor/elapsedTime?' + r, function (elapsedTime_message) {
+                    console.log(elapsedTime_message);
+                    myChart.hideLoading();
+
+                    // 指定图表的配置项和数据
+                    var option = option = {
+                        title: {
+                            text: '耗时'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['回调平均耗时', '消息流转平均耗时']
+                        },
+                        grid: {
+                            left: '0%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: elapsedTime_message.times
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                name: '回调平均耗时',
+                                type: 'line',
+                                stack: '总量',
+                                data: elapsedTime_message.flow_average_time
+                            },
+                            {
+                                name: '消息流转平均耗时',
+                                type: 'line',
+                                stack: '总量',
+                                data: elapsedTime_message.callback_average_time
+                            }
+                        ]
+                    };
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+                });
+
+                // 基于准备好的dom，初始化echarts实例
+                var messageChart = echarts.init(document.getElementById('message'));
+                // 统计消息个数
+                $.get('/sorakaq/monitor/workerMsg?' + r, function (sorakaq_message) {
+                    console.log(sorakaq_message);
+                    messageChart.hideLoading();
+
+                    var seriesdata = [];
+                    var legenddata = ['Growth'];
+                    for (var i=0;i<sorakaq_message.workers.length;i++) {
+                        seriesdata.push({
+                            name: sorakaq_message.workers[i],
+                            type: 'bar',
+                            data: sorakaq_message[sorakaq_message.workers[i]]
+                          });
+
+                          legenddata.push(sorakaq_message.workers[i])
+                    }
+
+                    var optionMsg = {
+                        title: {
+                            text: '消息数量'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow',
+                                label: {
+                                    show: true
+                                }
+                            }
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        legend: {
+                            data: legenddata,
+                            itemGap: 5
+                        },
+                        grid: {
+                            top: '12%',
+                            left: '1%',
+                            right: '10%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: sorakaq_message.names
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                name: '',
+                                axisLabel: {
+                                    formatter: function (a) {
+                                        a = +a;
+                                        return isFinite(a)
+                                            ? echarts.format.addCommas(+a)
+                                            : '';
+                                    }
+                                }
+                            }
+                        ],
+                        dataZoom: [
+                            {
+                                show: true,
+                                start: 0,
+                                end: 100
+                            },
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100
+                            },
+                            {
+                                show: true,
+                                yAxisIndex: 0,
+                                filterMode: 'empty',
+                                width: 30,
+                                height: '80%',
+                                showDataShadow: false,
+                                left: '93%'
+                            }
+                        ],
+                        series: seriesdata
+                    };
+
+                    messageChart.setOption(optionMsg);
+
+                });
+
+            </script>
+        </div>
+      </div>
+    </div>
+{{template "footer.tmpl"}}

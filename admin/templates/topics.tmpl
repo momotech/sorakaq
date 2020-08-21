@@ -1,0 +1,213 @@
+{{template "header.tmpl"}}
+    {{template "nav.tmpl"}}
+
+    <div class="container-fluid">
+      <div class="row">
+        {{template "left.tmpl"}}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h2 class="sub-header">{{ .title }}</h2>
+          <div>
+            <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#addModal">新增</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th>id</th>
+                    <th>业务名称</th>
+                    <th>Topic</th>
+                    <th>实例数量</th>
+                    <th>创建时间</th>
+                    <th>管理</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $idx,$item := .data}}
+                <tr>
+                    <td>{{$idx}}</td>
+                    <td>{{.Business}}</td>
+                    <td>{{.TopicName}}</td>
+                    <td>
+                        {{.WorkerNum}}：
+
+                        {{range .Workers}}
+                            <span class="label label-default">{{.}}</span>
+                        {{end}}
+                    </td>
+                    <td>{{.CreateTime}}</td>
+                    <td>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal" data-topicname="{{.TopicName}}" data-workernum="{{.WorkerNum}}">修改</button>
+                    </div>
+                    </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					更新topic
+				</h4>
+			</div>
+			<div class="modal-body">
+                <form class="form-horizontal" role="form" id="updateSaveForm">
+                  <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label">topic</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="topic_name" disabled="disabled">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="lastname" class="col-sm-2 control-label">实例数量</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" name="worker_num" placeholder="请输入实例数量">
+                      </div>
+                  </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="updateSave">保存</button>
+            </div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					新增topic
+				</h4>
+			</div>
+			<div class="modal-body">
+                <form class="form-horizontal" role="form" id="addSaveForm">
+                  <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label">业务名称</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="business" placeholder="业务名称">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label">topic</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="topic_name" placeholder="请输入topic">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="lastname" class="col-sm-2 control-label">实例数量</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" name="worker_num" placeholder="请输入实例数量">
+                      </div>
+                  </div>
+                </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="addSave">保存</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+
+<script>
+
+$(function(){
+
+    $('#addModal').on('click', '#addSave', function(){
+        var data = {};
+        var form = $('#addSaveForm');
+        var business = form.find('input[name="business"]').val();
+        var topic_name = form.find('input[name="topic_name"]').val();
+        var worker_num = form.find('input[name="worker_num"]').val();
+
+        data.business = business
+        data.topic_name = topic_name
+        data.worker_num = parseInt(worker_num)
+
+        console.log(data);
+
+        $.ajax({
+            type: "POST",
+            url: "/sorakaq/topic/add",
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (result) {
+                if (result.ec == 200) {
+                    $('#addModal').modal('hide')
+                    window.location.reload();
+                } else {
+                    alert("添加失败！");
+                }            },
+            error:function (message) {
+                alert("提交失败"+JSON.stringify(message));
+            }
+        });
+
+    });
+
+    $('#updateModal').on('click', '#updateSave', function(){
+        var data = {};
+        var form = $('#updateSaveForm');
+        var topic_name = form.find('input[name="topic_name"]').val();
+        var worker_num = form.find('input[name="worker_num"]').val();
+
+        data.topic_name = topic_name
+        data.worker_num = parseInt(worker_num)
+
+        console.log(data);
+
+        $.ajax({
+            type: "POST",
+            url: "/sorakaq/topic/update",
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (result) {
+                if (result.ec == 200) {
+                    $('#updateModal').modal('hide')
+                    window.location.reload();
+                } else {
+                    alert("更新失败！");
+                }            },
+            error:function (message) {
+                alert("提交失败"+JSON.stringify(message));
+            }
+        });
+
+    })
+
+    $('tbody').on('click', '.updateBtn', function(e) {
+        $this = $(e);
+        var worker_num = $(this).data('workernum')
+        var topic_name = $(this).data('topicname')
+        console.log(worker_num, topic_name)
+        var modal = $('#updateModal');
+        modal.find('input[name="topic_name"]').val(topic_name)
+        modal.find('input[name="worker_num"]').val(worker_num)
+    })
+
+});
+
+</script>
+
+{{template "footer.tmpl"}}

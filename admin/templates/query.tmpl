@@ -1,0 +1,106 @@
+{{template "header.tmpl"}}
+    {{template "nav.tmpl"}}
+
+    <div class="container-fluid">
+      <div class="row">
+        {{template "left.tmpl"}}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h2 class="sub-header">消息查询</h2>
+          <div class="row">
+            <div class="col-lg-3">
+            </div><!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search message" name="msg_id">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" id="query">Go!</button>
+                </span>
+              </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+          </div><!-- /.row -->
+
+          <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                      <th>消息id</th>
+                      <th>消息类型</th>
+                      <th>topic</th>
+                      <th>延迟时间(毫秒)</th>
+                      <th>回调超时时间(毫秒)</th>
+                      <th>workerIp</th>
+                      <th>消息接收时间</th>
+                      <th>请求类型</th>
+                      <th>消息详情</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+
+                </tbody>
+              </table>
+
+        </div>
+      </div>
+    </div>
+
+<script>
+
+$(function(){
+
+
+    $('#query').click(function(){
+
+        var msg_id = $('input[name="msg_id"]').val();
+        var data = {};
+        data.msg_id = msg_id;
+        console.log(data)
+        $.ajax({
+            type: "POST",
+            url: "/sorakaq/msg/detail",
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (result) {
+                console.log(result)
+                if (result.ec == 200) {
+                    console.log(result);
+                    var tbody = $('table.table').find('tbody');
+                    var detail = result.result
+                    function getFormatDate(str) {
+                        var oDate = new Date(str),
+                        oYear = oDate.getFullYear(),
+                        oMonth = oDate.getMonth() + 1,
+                        oDay = oDate.getDate(),
+                        oHour = oDate.getHours(),
+                        oMin = oDate.getMinutes(),
+                        oSen = oDate.getSeconds(),
+                        oMSen = oDate.getMilliseconds();
+                        return oYear + "/" + oMonth + "/" + oDay + "/ " + oHour + ":" + oMin + ":" + oSen + ":" + oMSen;
+                    };
+                    var showdata = "<tr>" +
+                     "<td>" + detail.msg_id + "</td>" +
+                     "<td>" + detail.msg_type + "</td>" +
+                     "<td>" + detail.topic_name + "</td>" +
+                     "<td>" + detail.delay_time + "</td>" +
+                     "<td>" + detail.ttr + "</td>" +
+                     "<td>" + detail.worker_ip + "</td>" +
+                     "<td>" + getFormatDate(detail.time_stamp) + "</td>" +
+                     "<td>" + detail.request_type + "</td>" +
+                     "<td>" + JSON.stringify(detail.body) + "</td>" +
+                     "</tr>"
+                    tbody.html(showdata);
+                } else {
+                    alert(result.em || '请求异常');
+                }
+            },
+            error:function (message) {
+                alert("请求异常"+JSON.stringify(message));
+            }
+        });
+    })
+})
+
+</script>
+
+{{template "footer.tmpl"}}

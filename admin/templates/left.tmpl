@@ -1,0 +1,42 @@
+<div class="col-sm-3 col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+    <!-- <li class="active"><a href="#">实例管理 <span class="sr-only">(current)</span></a></li> -->
+    <li ><a href="/sorakaq/instance/list?service_name=all">实例管理</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+    <li><a href="/sorakaq/topic/list">主题管理</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+    <li><a href="/sorakaq/msg/query">消息查询</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+        <li><a href="/monitor">监控</a></li>
+        </ul>
+</div>
+<script type="text/javascript">
+    window.setInterval(refresh, 1000);
+    function refresh() {
+        var r = new Date().getTime() + Math.random() + Math.random();
+        $("a").each(function () {
+            var v = $(this).attr("href");
+            if (v != undefined) {
+                if (v.indexOf("?")>0) {
+                    if (v.indexOf("r=")>0) {
+                        var idxr = v.indexOf("r=");
+                        v = v.substring(0,idxr-1);
+                        if(v.indexOf("?")<=0){
+                            v = v +"?";
+                        }
+                        $(this).attr("href", v + "&r=" + r);
+                    } else {
+                        $(this).attr("href", v + "&r=" + r);
+                    }
+
+                } else {
+                    $(this).attr("href", v + "?r=" + r);
+                }
+            }
+
+        });
+    }
+</script>

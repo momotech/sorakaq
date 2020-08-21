@@ -1,0 +1,59 @@
+{{template "header.tmpl"}}
+    <div class="container">
+
+        <form class="form-signin">
+          <h2 class="form-signin-heading">Please sign in</h2>
+          <label for="inputEmail" class="sr-only">Username</label>
+          <input type="text" id="inputName" class="form-control" placeholder="Username" required autofocus>
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="remember-me"> Remember me
+            </label>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit" id="login" >Sign in</button>
+        </form>
+  
+      </div> <!-- /container -->
+
+<script>
+
+$(function(){
+
+
+    $('#login').click(function(){
+
+        var username = $('input[id="inputName"]').val();
+        var password = $('input[id="inputPassword"]').val();
+        var data = {};
+        data.username = username;
+        data.password = password;
+        console.log(data)
+        $.ajax({
+            type: "POST",
+            url: "/sorakaq/login",
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (result) {
+                console.log(result)
+                if (result.ec == 200) {
+                    var timestamp3 = new Date().getTime();
+                    console.log(result, timestamp3);
+
+                    window.location.href = "/sorakaq/topic/list?" + timestamp3;
+                } else {
+                    alert(result.em || '请求异常');
+                }
+            },
+            error:function (message) {
+                alert("请求异常"+JSON.stringify(message));
+            }
+        });
+    })
+})
+
+</script>
+
+{{template "footer.tmpl"}}

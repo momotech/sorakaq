@@ -1,0 +1,128 @@
+{{template "header.tmpl"}}
+    {{template "nav.tmpl"}}
+
+    <div class="container-fluid">
+      <div class="row">
+        {{template "left.tmpl"}}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h2 class="sub-header">{{ .title }}</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th>id</th>
+                    <th>服务模块</th>
+                    <th>实例IP端口</th>
+                    <th>权重</th>
+                    <th>上线时间</th>
+                    <th>管理</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $idx,$item := .data}}
+                <tr>
+                    <td>{{$idx}}</td>
+                    <td>{{.ServiceName}}</td>
+                    <td>{{.IPPort}}</td>
+                    <td>{{.Weight}}</td>
+                    <td>{{.CreateTime}}</td>
+                    <td>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary  delBtn" data-toggle="modal" data-target="#delModal" data-servicename="{{.ServiceName}}" data-ipport="{{.IPPort}}">下线</button>
+                    </div>
+                    </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					下线实例
+				</h4>
+			</div>
+			<div class="modal-body">
+			<form class="form-horizontal" role="form" id="saveForm">
+                <div class="form-group">
+                    <label for="lastname" class="col-sm-2 control-label">服务模块</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="service_name" disabled="disabled">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="lastname" class="col-sm-2 control-label">实例IP端口</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" name="ipport" disabled="disabled">
+                      </div>
+                 </div>
+                  </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="save">确认下线</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<script>
+$(function(){
+
+    $('#delModal').on('click', '#save', function(){
+        var data = {};
+        var form = $('#saveForm');
+        var service_name = form.find('input[name="service_name"]').val();
+        var ipport = form.find('input[name="ipport"]').val();
+
+        data.service_name = service_name
+        data.instance = ipport
+
+        console.log(data);
+
+        $.ajax({
+            type: "POST",
+            url: "/sorakaq/instance/delete",
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (result) {
+                if (result.ec == 200) {
+                    $('#updateModal').modal('hide')
+                    window.location.reload();
+                } else {
+                    alert("更新失败！");
+                }            },
+            error:function (message) {
+                alert("提交失败"+JSON.stringify(message));
+            }
+        });
+
+    })
+
+    $('tbody').on('click', '.delBtn', function(e) {
+            $this = $(e);
+            var service_name = $(this).data('servicename')
+            var ipport = $(this).data('ipport')
+            console.log(service_name, ipport)
+            var modal = $('#delModal');
+            modal.find('input[name="service_name"]').val(service_name)
+            modal.find('input[name="ipport"]').val(ipport)
+        })
+
+
+});
+
+</script>
+
+{{template "footer.tmpl"}}
