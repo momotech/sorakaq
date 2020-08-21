@@ -1,5 +1,5 @@
 ### 整体架构
-![avatar](images/Architecture.png)
+![avatar](../images/Architecture.png)
 
 
 ### 模块介绍
