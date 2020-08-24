@@ -62,6 +62,7 @@ sudo sh start.sh worker
 [默认配置](docs/defaultConfig.md)
 
 ### 后台&监控
+后台登录地址：http://${SORAKAQ-ADMIN}:9087（端口与admin配置有关）
 登录账号密码 admin/admin
 - 实例管理
 
