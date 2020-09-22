@@ -10,6 +10,7 @@ import (
 	recovery "sorakaq/recovery/service"
 
 	"sorakaq/message"
+	"sorakaq/util"
 
 	"github.com/gofrs/uuid"
 
@@ -122,10 +123,18 @@ func (this *receiveService) process(req interface{}, msgType int) bool {
 	}
 	if msgType == message.CANCEL_MSG {
 		delayMsg.MsgType = message.CANCEL_MSG
-	} else {
+	} else if delayMsg.MsgType == message.NORMAO_DELAY_MSG || delayMsg.MsgType == message.CANCEL_MSG {
 		delayMsg.MsgType = message.ADD_TIME_MSG
 		delayMsg.DelayTime = addTime
+	} else {
+		delayMsg.MsgType = message.ADD_TIME_MSG
+		delayMsg.DelayTime += addTime
 	}
+
+	if delayMsg.DelayTime > util.SEVEN_DAY {
+		return false
+	}
+
 	var msgDetail []byte
 	msgDetail, err = json.Marshal(delayMsg)
 	if err != nil {

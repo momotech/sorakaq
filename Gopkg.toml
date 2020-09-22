@@ -57,7 +57,3 @@
 [[constraint]]
   name = "github.com/go-playground/validator"
   version = "=10.3.0"
-
-[[constraint]]
-  name = "github.com/momotech/timewheel"
-  version = "=1.0.1"

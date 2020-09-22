@@ -206,14 +206,6 @@
   version = "1.0.1"
 
 [[projects]]
-  digest = "1:ee325412d74880d032f681a07ef58f1225cbc995990cf2f4606c0c38f9387934"
-  name = "github.com/momotech/timewheel"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f5db9ff12ae77085a1e8c0614ec7925dad13daca"
-  version = "v1.0.1"
-
-[[projects]]
   digest = "1:af52537e91171a58eed809011d85641ccd78dc5c088665f30805520f8b7778ee"
   name = "github.com/pierrec/lz4"
   packages = [
@@ -415,7 +407,6 @@
     "github.com/gin-gonic/gin",
     "github.com/gofrs/uuid",
     "github.com/gomodule/redigo/redis",
-    "github.com/momotech/timewheel",
     "github.com/samuel/go-zookeeper/zk",
     "github.com/sirupsen/logrus",
   ]

@@ -18,6 +18,8 @@ const (
 	MSG_NOT_EXIST                 = 405
 	INCORRECT_ACCOUNT_OR_PASSWORD = 406
 	DELAY_TIME_EXCEEDS_THE_LIMIT  = 501
+
+	SEVEN_DAY = 7 * 24 * 3600 * 1000
 )
 
 var RespMsg = map[int]string{
