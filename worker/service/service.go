@@ -24,8 +24,6 @@ import (
 
 	recovery "sorakaq/recovery/service"
 
-	"github.com/momotech/timewheel"
-
 	"github.com/samuel/go-zookeeper/zk"
 	log "github.com/sirupsen/logrus"
 )
@@ -43,7 +41,7 @@ type workerService struct {
 	retryMsgChan       chan message.DelayMsg //消息重试通道
 }
 
-var tw *timewheel.TimeWheel
+var tw *util.TimeWheel
 
 const (
 	MAX_REQ_CNT    = 3
@@ -82,7 +80,7 @@ func Init(workerIp string, rpcPort int64) {
 }
 
 func (this *workerService) initTimeWheel() {
-	tw = timewheel.NewTimeWheel(100, 20*time.Millisecond)
+	tw = util.NewTimeWheel(100, 20*time.Millisecond)
 	tw.Start()
 }
 

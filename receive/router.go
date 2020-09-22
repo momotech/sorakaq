@@ -16,10 +16,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	SEVEN_DAY = 7 * 24 * 3600 * 1000
-)
-
 func startRouter(port int64) {
 	router := gin.Default()
 	msg := router.Group("/sorakaq/msg")
@@ -52,7 +48,7 @@ func submit(c *gin.Context) {
 		return
 	}
 
-	if req.DelayTime > SEVEN_DAY {
+	if req.DelayTime > util.SEVEN_DAY {
 		c.JSON(http.StatusOK, util.RespJson(util.DELAY_TIME_EXCEEDS_THE_LIMIT, false))
 		return
 	}
@@ -111,7 +107,7 @@ func addTime(c *gin.Context) {
 		c.JSON(http.StatusOK, util.RespJson(util.INVALID_PARAMS, false))
 		return
 	}
-	if req.TopicName == "" || req.MsgId == "" || req.AddTime == 0 || req.AddTime > SEVEN_DAY {
+	if req.TopicName == "" || req.MsgId == "" || req.AddTime == 0 || req.AddTime > util.SEVEN_DAY {
 		c.JSON(http.StatusOK, util.RespJson(util.INVALID_PARAMS, false))
 		return
 	}

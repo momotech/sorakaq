@@ -24,7 +24,7 @@
 - 目前center分发消息策略是根据topic分配的worker实例列表进行随机分发。
 
 目前存在的问题：随机策略可能导致worker负载不均衡，
-优化方案：下个版本会提供多种负载均衡策略(轮训、加权轮训、加权随机)，用户可以自主选择。worker权重可以根据worker承载的消息量和负载情况（内存和cpu使用率）进行计算。
+优化方案：下个版本会提供多种负载均衡策略(轮询、加权轮询、加权随机)，用户可以自主选择。worker权重可以根据worker承载的消息量和负载情况（内存和cpu使用率）进行计算。
 
 ### 服务注册与发现
 ![avatar](../images/Discovery.png)
@@ -38,7 +38,7 @@ receive/admin/center/worker服务启动时会在zookeeper上通过创建临时�
 
 ![avatar](../images/Scale-out.png)
 
-admin/receive服务提供web服务，nginx提供反向代理和负载均衡（轮训或者加权轮训）功能。
+admin/receive服务提供web服务，nginx提供反向代理和负载均衡（轮询或者加权轮询）功能。
 - center水平扩展
 
 当kafka消息消费过慢时，可以增加center实例提高消息消费速度。当增加center实例时，kafka消费者组重平衡机制会对topic对应的partition进行重新分配。
